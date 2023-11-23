@@ -44,14 +44,6 @@ define('APP', TEST_APP . 'TestApp' . DS);
 define('WWW_ROOT', TEST_APP . 'webroot' . DS);
 define('CONFIG', TEST_APP . 'config' . DS);
 
-// phpcs:disable
-@mkdir(LOGS);
-@mkdir(SESSIONS);
-@mkdir(CACHE);
-@mkdir(CACHE . 'views');
-@mkdir(CACHE . 'models');
-// phpcs:enable
-
 require_once ROOT . DS . 'vendor/cakephp/core/functions.php';
 
 date_default_timezone_set('UTC');
