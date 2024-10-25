@@ -330,7 +330,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             return null;
         }
 
-        $this->_providers[$name] = new RulesProvider();
+        $this->_providers[$name] = Validation::class;
 
         return $this->_providers[$name];
     }
