@@ -238,7 +238,7 @@ class Validation
      * Returns true if $check is in the proper credit card format.
      *
      * @param mixed $check credit card number to validate
-     * @param list<string>|string $type 'all' may be passed as a string, defaults to fast which checks format of
+     * @param array<string>|string $type 'all' may be passed as a string, defaults to fast which checks format of
      *     most major credit cards if an array is used only the values of the array are checked.
      *    Example: ['amex', 'bankcard', 'maestro']
      * @param bool $deep set to true this will check the Luhn algorithm of the credit card.
@@ -444,7 +444,7 @@ class Validation
      * - `y` 2006 just the year without any separators
      *
      * @param mixed $check a valid date string/object
-     * @param list<string>|string $format Use a string or an array of the keys above.
+     * @param array<string>|string $format Use a string or an array of the keys above.
      *    Arrays should be passed as ['dmy', 'mdy', ...]
      * @param string|null $regex If a custom regular expression is used this is the only validation that will occur.
      * @return bool Success
@@ -805,7 +805,7 @@ class Validation
      * Checks that the value is a valid backed enum instance or value.
      *
      * @param mixed $check Value to check
-     * @param list<\BackedEnum> $cases Array of enum cases that are valid.
+     * @param array<\BackedEnum> $cases Array of enum cases that are valid.
      * @return bool Success
      * @since 5.1.0
      */
@@ -828,7 +828,7 @@ class Validation
      * Checks that the value is a valid backed enum instance or value.
      *
      * @param mixed $check Value to check
-     * @param list<\BackedEnum> $cases Array of enum cases that are not valid.
+     * @param array<\BackedEnum> $cases Array of enum cases that are not valid.
      * @return bool Success
      * @since 5.1.0
      */
@@ -966,7 +966,7 @@ class Validation
      * and arrays with a `name` key.
      *
      * @param mixed $check Value to check
-     * @param list<string> $extensions file extensions to allow. By default extensions are 'gif', 'jpeg', 'png', 'jpg'
+     * @param array<string> $extensions file extensions to allow. By default extensions are 'gif', 'jpeg', 'png', 'jpg'
      * @return bool Success
      */
     public static function extension(mixed $check, array $extensions = ['gif', 'jpeg', 'png', 'jpg']): bool
@@ -1250,7 +1250,7 @@ class Validation
      * Checks if a value is in a given list. Comparison is case-sensitive by default.
      *
      * @param mixed $check Value to check.
-     * @param list<string> $list List to check against.
+     * @param array<string> $list List to check against.
      * @param bool $caseInsensitive Set to true for case-insensitive comparison.
      * @return bool Success.
      */
