@@ -103,7 +103,7 @@ class Validation
     public const COMPARE_LESS_OR_EQUAL = '<=';
 
     /**
-     * @var list<string>
+     * @var array<string>
      */
     protected const COMPARE_STRING = [
         self::COMPARE_EQUAL,
