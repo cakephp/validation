@@ -756,7 +756,7 @@ class Validation
      * any PHP version on a non-windows distribution
      *
      * @param mixed $check Value to check
-     * @param bool $deep Perform a deeper validation (if true), by also checking availability of host
+     * @param bool|null $deep Perform a deeper validation (if true), by also checking availability of host
      * @param string|null $regex Regex to use (if none it will use built in regex)
      * @return bool Success
      */
