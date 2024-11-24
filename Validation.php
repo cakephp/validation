@@ -103,7 +103,7 @@ class Validation
     public const COMPARE_LESS_OR_EQUAL = '<=';
 
     /**
-     * @var list<string>
+     * @var array<string>
      */
     protected const COMPARE_STRING = [
         self::COMPARE_EQUAL,
@@ -238,7 +238,7 @@ class Validation
      * Returns true if $check is in the proper credit card format.
      *
      * @param mixed $check credit card number to validate
-     * @param list<string>|string $type 'all' may be passed as a string, defaults to fast which checks format of
+     * @param array<string>|string $type 'all' may be passed as a string, defaults to fast which checks format of
      *     most major credit cards if an array is used only the values of the array are checked.
      *    Example: ['amex', 'bankcard', 'maestro']
      * @param bool $deep set to true this will check the Luhn algorithm of the credit card.
@@ -444,7 +444,7 @@ class Validation
      * - `y` 2006 just the year without any separators
      *
      * @param mixed $check a valid date string/object
-     * @param list<string>|string $format Use a string or an array of the keys above.
+     * @param array<string>|string $format Use a string or an array of the keys above.
      *    Arrays should be passed as ['dmy', 'mdy', ...]
      * @param string|null $regex If a custom regular expression is used this is the only validation that will occur.
      * @return bool Success
@@ -756,7 +756,7 @@ class Validation
      * any PHP version on a non-windows distribution
      *
      * @param mixed $check Value to check
-     * @param bool $deep Perform a deeper validation (if true), by also checking availability of host
+     * @param bool|null $deep Perform a deeper validation (if true), by also checking availability of host
      * @param string|null $regex Regex to use (if none it will use built in regex)
      * @return bool Success
      */
@@ -805,7 +805,7 @@ class Validation
      * Checks that the value is a valid backed enum instance or value.
      *
      * @param mixed $check Value to check
-     * @param list<\BackedEnum> $cases Array of enum cases that are valid.
+     * @param array<\BackedEnum> $cases Array of enum cases that are valid.
      * @return bool Success
      * @since 5.1.0
      */
@@ -828,7 +828,7 @@ class Validation
      * Checks that the value is a valid backed enum instance or value.
      *
      * @param mixed $check Value to check
-     * @param list<\BackedEnum> $cases Array of enum cases that are not valid.
+     * @param array<\BackedEnum> $cases Array of enum cases that are not valid.
      * @return bool Success
      * @since 5.1.0
      */
@@ -849,7 +849,7 @@ class Validation
 
     /**
      * @param mixed $check
-     * @param class-string<\BackedEnum> $enumClassName
+     * @param class-string $enumClassName
      * @param array<string, mixed> $options
      * @return bool
      */
@@ -866,7 +866,7 @@ class Validation
         try {
             $reflectionEnum = new ReflectionEnum($enumClassName);
 
-            /** @var \ReflectionNamedType|\ReflectionUnionType|null $reflectionBackingType */
+            /** @var \ReflectionNamedType|null $reflectionBackingType */
             $reflectionBackingType = $reflectionEnum->getBackingType();
             if ($reflectionBackingType) {
                 if (method_exists($reflectionBackingType, 'getName')) {
@@ -880,7 +880,7 @@ class Validation
 
         if ($backingType === null) {
             throw new InvalidArgumentException(
-                'The `$enumClassName` argument must be the classname of a valid backed enum.'
+                'The `$enumClassName` argument must be the classname of a valid backed enum.',
             );
         }
 
@@ -904,6 +904,7 @@ class Validation
             'except' => null,
         ];
 
+        /** @var class-string<\BackedEnum> $enumClassName */
         $enum = $enumClassName::tryFrom($check);
         if ($enum === null) {
             return false;
@@ -965,7 +966,7 @@ class Validation
      * and arrays with a `name` key.
      *
      * @param mixed $check Value to check
-     * @param list<string> $extensions file extensions to allow. By default extensions are 'gif', 'jpeg', 'png', 'jpg'
+     * @param array<string> $extensions file extensions to allow. By default extensions are 'gif', 'jpeg', 'png', 'jpg'
      * @return bool Success
      */
     public static function extension(mixed $check, array $extensions = ['gif', 'jpeg', 'png', 'jpg']): bool
@@ -1249,7 +1250,7 @@ class Validation
      * Checks if a value is in a given list. Comparison is case-sensitive by default.
      *
      * @param mixed $check Value to check.
-     * @param list<string> $list List to check against.
+     * @param array<string> $list List to check against.
      * @param bool $caseInsensitive Set to true for case-insensitive comparison.
      * @return bool Success.
      */
@@ -1527,7 +1528,7 @@ class Validation
     {
         if (!isset($options['height']) && !isset($options['width'])) {
             throw new InvalidArgumentException(
-                'Invalid image size validation parameters! Missing `width` and / or `height`.'
+                'Invalid image size validation parameters! Missing `width` and / or `height`.',
             );
         }
 
@@ -1629,7 +1630,7 @@ class Validation
         if ($options['type'] !== 'latLong') {
             throw new InvalidArgumentException(sprintf(
                 'Unsupported coordinate type `%s`. Use `latLong` instead.',
-                $options['type']
+                $options['type'],
             ));
         }
         $pattern = '/^' . self::$_pattern['latitude'] . ',\s*' . self::$_pattern['longitude'] . '$/';
@@ -1856,7 +1857,7 @@ class Validation
                     $value['hour'],
                     $value['minute'],
                     $value['second'],
-                    $value['microsecond']
+                    $value['microsecond'],
                 );
             }
         }
