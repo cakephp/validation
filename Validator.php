@@ -1788,6 +1788,20 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Add a date format validation rule to a field.
      *
+     * Years are valid from 0001 to 2999.
+     *
+     * ### Formats:
+     *
+     * - `ymd` 2006-12-27 or 06-12-27 separators can be a space, period, dash, forward slash
+     * - `dmy` 27-12-2006 or 27-12-06 separators can be a space, period, dash, forward slash
+     * - `mdy` 12-27-2006 or 12-27-06 separators can be a space, period, dash, forward slash
+     * - `dMy` 27 December 2006 or 27 Dec 2006
+     * - `Mdy` December 27, 2006 or Dec 27, 2006 comma is optional
+     * - `My` December 2006 or Dec 2006
+     * - `my` 12/2006 or 12/06 separators can be a space, period, dash, forward slash
+     * - `ym` 2006/12 or 06/12 separators can be a space, period, dash, forward slash
+     * - `y` 2006 just the year without any separators
+     *
      * @param string $field The field you want to apply the rule to.
      * @param array<string> $formats A list of accepted date formats.
      * @param string|null $message The error message when the rule fails.
@@ -1828,6 +1842,27 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
 
     /**
      * Add a date time format validation rule to a field.
+     *
+     * All values matching the "date" core validation rule, and the "time" one will be valid
+     *
+     * Years are valid from 0001 to 2999.
+     *
+     * ### Formats:
+     *
+     * - `ymd` 2006-12-27 or 06-12-27 separators can be a space, period, dash, forward slash
+     * - `dmy` 27-12-2006 or 27-12-06 separators can be a space, period, dash, forward slash
+     * - `mdy` 12-27-2006 or 12-27-06 separators can be a space, period, dash, forward slash
+     * - `dMy` 27 December 2006 or 27 Dec 2006
+     * - `Mdy` December 27, 2006 or Dec 27, 2006 comma is optional
+     * - `My` December 2006 or Dec 2006
+     * - `my` 12/2006 or 12/06 separators can be a space, period, dash, forward slash
+     * - `ym` 2006/12 or 06/12 separators can be a space, period, dash, forward slash
+     * - `y` 2006 just the year without any separators
+     *
+     * Time is validated as 24hr (HH:MM[:SS][.FFFFFF]) or am/pm ([H]H:MM[a|p]m)
+     *
+     * Seconds and fractional seconds (microseconds) are allowed but optional
+     * in 24hr format.
      *
      * @param string $field The field you want to apply the rule to.
      * @param array<string> $formats A list of accepted date formats.
