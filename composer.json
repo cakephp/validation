@@ -23,20 +23,20 @@
     },
     "require": {
         "php": ">=8.4",
-        "cakephp/core": "6.x-dev",
-        "cakephp/utility": "6.x-dev",
+        "cakephp/core": "^6.0",
+        "cakephp/utility": "^6.0",
         "psr/http-message": "^1.1 || ^2.0"
     },
-    "suggest": {
-        "cakephp/i18n": "If you want to use Validation::localizedTime()"
+    "require-dev": {
+        "cakephp/i18n": "^6.0"
     },
     "autoload": {
         "psr-4": {
             "Cake\\Validation\\": "."
         }
     },
-    "require-dev": {
-        "cakephp/i18n": "6.x-dev"
+    "suggest": {
+        "cakephp/i18n": "If you want to use Validation::localizedTime()"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
