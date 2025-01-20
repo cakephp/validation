@@ -23,8 +23,8 @@
     },
     "require": {
         "php": ">=8.1",
-        "cakephp/core": "^5.2",
-        "cakephp/utility": "^5.2",
+        "cakephp/core": "5.2.*@dev",
+        "cakephp/utility": "5.2.*@dev",
         "psr/http-message": "^1.1 || ^2.0"
     },
     "require-dev": {
@@ -38,6 +38,10 @@
     "suggest": {
         "cakephp/i18n": "If you want to use Validation::localizedTime()"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-5.next": "5.2.x-dev"
+        }
+    }
 }
