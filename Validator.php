@@ -1997,32 +1997,67 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         ?string $message = null,
         Closure|string|null $when = null,
     ) {
-        if ($message === null) {
-            if (!$this->_useI18n) {
-                if ($places === null) {
-                    $message = 'The provided value must be decimal with any number of decimal places, including none';
-                } else {
-                    $message = sprintf('The provided value must be decimal with `%s` decimal places', $places);
-                }
-            } elseif ($places === null) {
-                $message = __d(
-                    'cake',
-                    'The provided value must be decimal with any number of decimal places, including none',
-                );
-            } else {
-                $message = __d(
-                    'cake',
-                    'The provided value must be decimal with `{0}` decimal places',
-                    $places,
-                );
-            }
-        }
-
+        $message ??= $this->defaultMessageForDecimal($places);
         $extra = array_filter(['on' => $when, 'message' => $message]);
 
         return $this->add($field, 'decimal', $extra + [
             'rule' => ['decimal', $places],
         ]);
+    }
+
+    /**
+     * Add a localized decimal validation rule to a field.
+     *
+     * @param string $field The field you want to apply the rule to.
+     * @param int|null $places The number of decimal places to require.
+     * @param string|null $message The error message when the rule fails.
+     * @param \Closure|string|null $when Either 'create' or 'update' or a Closure that returns
+     *   true when the validation rule should be applied.
+     * @see \Cake\Validation\Validation::localizedDecimal()
+     * @return $this
+     */
+    public function localizedDecimal(
+        string $field,
+        ?int $places = null,
+        ?string $message = null,
+        Closure|string|null $when = null,
+    ) {
+        $message ??= $this->defaultMessageForDecimal($places);
+        $extra = array_filter(['on' => $when, 'message' => $message]);
+
+        return $this->add($field, 'localizedDecimal', $extra + [
+            'rule' => ['localizedDecimal', $places],
+        ]);
+    }
+
+    /**
+     * Get default validation message for decimal validation methods.
+     *
+     * @param int|null $places The number of decimal places to require.
+     * @return string
+     */
+    protected function defaultMessageForDecimal(?int $places = null): string
+    {
+        if (!$this->_useI18n) {
+            if ($places === null) {
+                return 'The provided value must be decimal with any number of decimal places, including none';
+            }
+
+            return sprintf('The provided value must be decimal with `%s` decimal places', $places);
+        }
+
+        if ($places === null) {
+            return __d(
+                'cake',
+                'The provided value must be decimal with any number of decimal places, including none',
+            );
+        }
+
+        return __d(
+            'cake',
+            'The provided value must be decimal with `{0}` decimal places',
+            $places,
+        );
     }
 
     /**
