@@ -23,12 +23,12 @@
     },
     "require": {
         "php": ">=8.4",
-        "cakephp/core": "^6.0",
-        "cakephp/utility": "^6.0",
+        "cakephp/core": "6.0.*@dev",
+        "cakephp/utility": "6.0.*@dev",
         "psr/http-message": "^1.1 || ^2.0"
     },
     "require-dev": {
-        "cakephp/i18n": "^6.0"
+        "cakephp/i18n": "6.0.*@dev"
     },
     "autoload": {
         "psr-4": {
@@ -38,6 +38,10 @@
     "suggest": {
         "cakephp/i18n": "If you want to use Validation::localizedTime()"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-5.next": "6.0.x-dev"
+        }
+    }
 }
