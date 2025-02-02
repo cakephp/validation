@@ -40,7 +40,7 @@ interface ValidatorAwareInterface
      * @param \Cake\Validation\Validator $validator Validator object to be set.
      * @return $this
      */
-    public function setValidator(string $name, Validator $validator);
+    public function setValidator(string $name, Validator $validator): static;
 
     /**
      * Checks whether a validator has been set.
