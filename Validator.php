@@ -648,7 +648,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     public function requirePresence(
         array|string $field,
         Closure|string|bool $mode = true,
-        ?string $message = null
+        ?string $message = null,
     ): static {
         $defaults = [
             'mode' => $mode,
@@ -1049,7 +1049,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             return $when === static::WHEN_CREATE ? static::WHEN_UPDATE : static::WHEN_CREATE;
         }
         if ($when instanceof Closure) {
-            return fn ($context) => !$when($context);
+            return fn($context) => !$when($context);
         }
 
         return $when;
@@ -1176,7 +1176,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     public function notAsciiAlphaNumeric(
         string $field,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2123,7 +2123,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         if ($message === null) {
-            $cases = array_map(fn ($case) => $case->value, $enumClassName::cases());
+            $cases = array_map(fn($case) => $case->value, $enumClassName::cases());
             $caseOptions = implode('`, `', $cases);
             if (!$this->_useI18n) {
                 $message = sprintf('The provided value must be one of `%s`', $caseOptions);
@@ -2237,7 +2237,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $min,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2269,7 +2269,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $min,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2301,7 +2301,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $max,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2333,7 +2333,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $max,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2447,7 +2447,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         array $range,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if (count($range) !== 2) {
             throw new InvalidArgumentException('The $range argument requires 2 numbers');
@@ -2552,7 +2552,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         array $list,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         $listEnumeration = implode(', ', $list);
 
@@ -2956,7 +2956,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $count,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -2995,7 +2995,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         int $count,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
@@ -3066,7 +3066,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         string $field,
         string $regex,
         ?string $message = null,
-        Closure|string|null $when = null
+        Closure|string|null $when = null,
     ): static {
         if ($message === null) {
             if (!$this->_useI18n) {
