@@ -273,7 +273,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      * passed a ValidationSet as second argument, it will replace any other rule set defined
      * before
      *
-     * @param string $name [optional] The fieldname to fetch.
+     * @param string $name [optional] The field name to fetch.
      * @param \Cake\Validation\ValidationSet|null $set The set of rules for field
      * @return \Cake\Validation\ValidationSet
      */
