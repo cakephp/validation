@@ -20,6 +20,7 @@ declare(strict_types=1);
  */
 namespace Cake\Validation;
 
+use Cake\Core\Exception\CakeException;
 use Closure;
 use ReflectionFunction;
 
@@ -30,11 +31,11 @@ use ReflectionFunction;
 class ValidationRule
 {
     /**
-     * The method to be called for a given scope
+     * The rule callable
      *
-     * @var callable|string
+     * @var callable
      */
-    protected $_rule;
+    protected $_callable;
 
     /**
      * The 'on' key
@@ -58,14 +59,6 @@ class ValidationRule
     protected ?string $_message = null;
 
     /**
-     * Key under which the object or class where the method to be used for
-     * validation will be found
-     *
-     * @var string
-     */
-    protected string $_provider = 'default';
-
-    /**
      * Extra arguments to be passed to the validation method
      *
      * @var array
@@ -80,6 +73,10 @@ class ValidationRule
     public function __construct(array $validator)
     {
         $this->_addValidatorProps($validator);
+
+        if (!$this->_callable) {
+            throw new CakeException('Validation rule must have a `callable`');
+        }
     }
 
     /**
@@ -99,8 +96,6 @@ class ValidationRule
      * it is assumed that the rule failed and the error message was given as a result.
      *
      * @param mixed $value The data to validate
-     * @param array<string, mixed> $providers Associative array with objects or class names that will
-     * be passed as the last argument for the validation method
      * @param array<string, mixed> $context A key value list of data that could be used as context
      * during validation. Recognized keys are:
      * - newRecord: (boolean) whether the data to be validated belongs to a
@@ -111,27 +106,19 @@ class ValidationRule
      * @throws \InvalidArgumentException when the supplied rule is not a valid
      * callable for the configured scope
      */
-    public function process(mixed $value, array $providers, array $context = []): array|string|bool
+    public function process(mixed $value, array $context = []): array|string|bool
     {
-        $context += ['data' => [], 'newRecord' => true, 'providers' => $providers];
+        $context += ['data' => [], 'newRecord' => true];
 
         if ($this->_skip($context)) {
             return true;
         }
 
-        if (is_string($this->_rule)) {
-            $provider = $providers[$this->_provider];
-            /** @phpstan-ignore-next-line */
-            $callable = [$provider, $this->_rule](...);
-        } else {
-            $callable = $this->_rule;
-            if (!$callable instanceof Closure) {
-                $callable = $callable(...);
-            }
-        }
+        $callable = $this->_callable instanceof Closure
+            ? $this->_callable
+            : ($this->_callable)(...);
 
         $args = [$value];
-
         if ($this->_pass) {
             $args = array_merge([$value], array_values($this->_pass));
         }
@@ -193,11 +180,7 @@ class ValidationRule
             if (!$value) {
                 continue;
             }
-            if ($key === 'rule' && is_array($value) && !is_callable($value)) {
-                $this->_pass = array_slice($value, 1);
-                $value = array_shift($value);
-            }
-            if (in_array($key, ['rule', 'on', 'message', 'last', 'provider', 'pass'], true)) {
+            if (in_array($key, ['callable', 'on', 'message', 'last', 'pass'], true)) {
                 $this->{"_{$key}"} = $value;
             }
         }
@@ -211,8 +194,6 @@ class ValidationRule
      */
     public function get(string $property): mixed
     {
-        $property = '_' . $property;
-
-        return $this->{$property} ?? null;
+        return $this->{'_' . $property} ?? null;
     }
 }
