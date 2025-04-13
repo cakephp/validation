@@ -20,7 +20,6 @@ declare(strict_types=1);
  */
 namespace Cake\Validation;
 
-use Cake\Core\Exception\CakeException;
 use Closure;
 use ReflectionFunction;
 
@@ -31,70 +30,25 @@ use ReflectionFunction;
 class ValidationRule
 {
     /**
-     * The rule name
-     *
-     * @var string|null
-     */
-    protected ?string $_name = null;
-
-    /**
-     * The rule callable
+     * The callable to be used for validation
      *
      * @var callable
      */
-    protected $_callable;
-
-    /**
-     * The 'on' key
-     *
-     * @var callable|string|null
-     */
-    protected $_on;
-
-    /**
-     * The 'last' key
-     *
-     * @var bool
-     */
-    protected bool $_last = false;
-
-    /**
-     * The 'message' key
-     *
-     * @var string|null
-     */
-    protected ?string $_message = null;
-
-    /**
-     * Extra arguments to be passed to the validation method
-     *
-     * @var array
-     */
-    protected array $_pass = [];
+    protected $callable;
 
     /**
      * Constructor
-     *
-     * @param array<string, mixed> $validator The validator properties
      */
-    public function __construct(array $validator)
-    {
-        $this->_addValidatorProps($validator);
-
-        if (!$this->_callable) {
-            throw new CakeException('Validation rule must have a `callable`');
-        }
-    }
-
-    /**
-     * Returns whether this rule should break validation process for associated field
-     * after it fails
-     *
-     * @return bool
-     */
-    public function isLast(): bool
-    {
-        return $this->_last;
+    public function __construct(
+        callable $callable,
+        public protected(set) ?string $name = null,
+        public protected(set) ?string $message = null,
+        /** @var \Closure|string|null */
+        public protected(set) Closure|string|null $on = null,
+        public protected(set) bool $last = false,
+        public protected(set) array $pass = [],
+    ) {
+        $this->callable = $callable;
     }
 
     /**
@@ -121,13 +75,13 @@ class ValidationRule
             return true;
         }
 
-        $callable = $this->_callable instanceof Closure
-            ? $this->_callable
-            : ($this->_callable)(...);
+        $callable = $this->callable instanceof Closure
+            ? $this->callable
+            : ($this->callable)(...);
 
         $args = [$value];
-        if ($this->_pass) {
-            $args = array_merge([$value], array_values($this->_pass));
+        if ($this->pass) {
+            $args = array_merge([$value], array_values($this->pass));
         }
 
         $params = (new ReflectionFunction($callable))->getParameters();
@@ -139,7 +93,7 @@ class ValidationRule
         $result = $callable(...$args);
 
         if ($result === false) {
-            return $this->_message ?: false;
+            return $this->message ?: false;
         }
 
         return $result;
@@ -159,48 +113,19 @@ class ValidationRule
      */
     protected function _skip(array $context): bool
     {
-        if (is_string($this->_on)) {
+        if (is_string($this->on)) {
             $newRecord = $context['newRecord'];
 
-            return ($this->_on === Validator::WHEN_CREATE && !$newRecord)
-                || ($this->_on === Validator::WHEN_UPDATE && $newRecord);
+            return ($this->on === Validator::WHEN_CREATE && !$newRecord)
+                || ($this->on === Validator::WHEN_UPDATE && $newRecord);
         }
 
-        if ($this->_on !== null) {
-            $function = $this->_on;
+        if ($this->on !== null) {
+            $function = $this->on;
 
             return !$function($context);
         }
 
         return false;
-    }
-
-    /**
-     * Sets the rule properties from the rule entry in validate
-     *
-     * @param array<string, mixed> $validator [optional]
-     * @return void
-     */
-    protected function _addValidatorProps(array $validator = []): void
-    {
-        foreach ($validator as $key => $value) {
-            if (!$value) {
-                continue;
-            }
-            if (in_array($key, ['name', 'callable', 'on', 'message', 'last', 'pass'], true)) {
-                $this->{"_{$key}"} = $value;
-            }
-        }
-    }
-
-    /**
-     * Returns the value of a property by name
-     *
-     * @param string $property The name of the property to retrieve.
-     * @return mixed
-     */
-    public function get(string $property): mixed
-    {
-        return $this->{'_' . $property} ?? null;
     }
 }
