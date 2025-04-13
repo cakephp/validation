@@ -31,6 +31,13 @@ use ReflectionFunction;
 class ValidationRule
 {
     /**
+     * The rule name
+     *
+     * @var string|null
+     */
+    protected ?string $_name = null;
+
+    /**
      * The rule callable
      *
      * @var callable
@@ -180,7 +187,7 @@ class ValidationRule
             if (!$value) {
                 continue;
             }
-            if (in_array($key, ['callable', 'on', 'message', 'last', 'pass'], true)) {
+            if (in_array($key, ['name', 'callable', 'on', 'message', 'last', 'pass'], true)) {
                 $this->{"_{$key}"} = $value;
             }
         }

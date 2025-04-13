@@ -3147,8 +3147,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         foreach ($this->_fields[$field] as $rule) {
-            $callable = $rule->get('callable');
-            if (is_array($callable) && $callable[1] === 'notBlank' && $rule->get('message')) {
+            if ($rule->get('name') === 'notBlank' && $rule->get('message')) {
                 return $rule->get('message');
             }
         }
