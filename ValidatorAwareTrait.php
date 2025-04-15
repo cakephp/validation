@@ -27,9 +27,8 @@ use InvalidArgumentException;
  * the implementing class wants to build and customize a variety
  * of validator instances.
  *
- * This trait expects that classes including it define three constants:
+ * Classes using this trait can declare these constants:
  *
- * - `DEFAULT_VALIDATOR` - The default validator name.
  * - `VALIDATOR_PROVIDER_NAME ` - The provider name the including class is assigned
  *   in validators.
  * - `BUILD_VALIDATOR_EVENT` - The name of the event to be triggered when validators
@@ -159,7 +158,10 @@ trait ValidatorAwareTrait
      */
     public function setValidator(string $name, Validator $validator): static
     {
-        $validator->setProvider(static::VALIDATOR_PROVIDER_NAME, $this);
+        if (defined(static::class . '::VALIDATOR_PROVIDER_NAME')) {
+            $validator->setProvider(static::VALIDATOR_PROVIDER_NAME, $this);
+        }
+
         $this->_validators[$name] = $validator;
 
         return $this;
