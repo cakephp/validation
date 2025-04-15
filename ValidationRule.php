@@ -43,7 +43,6 @@ class ValidationRule
         callable $callable,
         public protected(set) ?string $name = null,
         public protected(set) ?string $message = null,
-        /** @var \Closure|string|null */
         public protected(set) Closure|string|null $on = null,
         public protected(set) bool $last = false,
         public protected(set) array $pass = [],
