@@ -30,24 +30,16 @@ use ReflectionFunction;
 class ValidationRule
 {
     /**
-     * The callable to be used for validation
-     *
-     * @var callable
-     */
-    protected $callable;
-
-    /**
      * Constructor
      */
     public function __construct(
-        callable $callable,
+        public protected(set) Closure $callable,
         public protected(set) ?string $name = null,
         public protected(set) ?string $message = null,
         public protected(set) Closure|string|null $on = null,
         public protected(set) bool $last = false,
         public protected(set) array $pass = [],
     ) {
-        $this->callable = $callable;
     }
 
     /**
@@ -74,22 +66,18 @@ class ValidationRule
             return true;
         }
 
-        $callable = $this->callable instanceof Closure
-            ? $this->callable
-            : ($this->callable)(...);
-
         $args = [$value];
         if ($this->pass) {
             $args = array_merge([$value], array_values($this->pass));
         }
 
-        $params = (new ReflectionFunction($callable))->getParameters();
+        $params = (new ReflectionFunction($this->callable))->getParameters();
         $lastParm = array_pop($params);
         if ($lastParm && $lastParm->getName() === 'context') {
             $args['context'] = $context;
         }
 
-        $result = $callable(...$args);
+        $result = ($this->callable)(...$args);
 
         if ($result === false) {
             return $this->message ?: false;

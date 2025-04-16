@@ -502,7 +502,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param string $name The name of the rule.
      * @param array $rule The rule array to normalize.
-     * @return array
+     * @return array{callable: \Closure, last: bool, pass: array, message?: string}
      */
     protected function normalizeRuleArray(string $name, array $rule): array
     {
@@ -513,13 +513,14 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             'pass' => [],
         ];
 
-        if (is_string($rule['rule'])) {
-            $rule['callable'] = [$this->_providers[$rule['provider']], $rule['rule']];
-        } elseif (is_array($rule['rule']) && !is_callable($rule['rule'])) {
-            $rule['pass'] = array_slice($rule['rule'], 1);
-            $rule['callable'] = [$this->_providers[$rule['provider']], array_shift($rule['rule'])];
+        $method = $rule['rule'];
+        if (is_string($method)) {
+            $rule['callable'] = Closure::fromCallable([$this->_providers[$rule['provider']], $method]);
+        } elseif (is_array($method) && !is_callable($method)) {
+            $rule['pass'] = array_slice($method, 1);
+            $rule['callable'] = Closure::fromCallable([$this->_providers[$rule['provider']], array_shift($method)]);
         } else {
-            $rule['callable'] = $rule['rule'];
+            $rule['callable'] = $method instanceof Closure ? $method : Closure::fromCallable($method);
         }
 
         unset($rule['provider'], $rule['rule']);
