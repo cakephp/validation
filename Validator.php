@@ -515,12 +515,12 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
 
         $method = $rule['rule'];
         if (is_string($method)) {
-            $rule['callable'] = Closure::fromCallable([$this->_providers[$rule['provider']], $method]);
+            $rule['callable'] = [$this->_providers[$rule['provider']], $method](...);
         } elseif (is_array($method) && !is_callable($method)) {
             $rule['pass'] = array_slice($method, 1);
-            $rule['callable'] = Closure::fromCallable([$this->_providers[$rule['provider']], array_shift($method)]);
+            $rule['callable'] = [$this->_providers[$rule['provider']], array_shift($method)](...);
         } else {
-            $rule['callable'] = $method instanceof Closure ? $method : Closure::fromCallable($method);
+            $rule['callable'] = $method(...);
         }
 
         unset($rule['provider'], $rule['rule']);
