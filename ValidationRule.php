@@ -33,12 +33,12 @@ class ValidationRule
      * Constructor
      */
     public function __construct(
-        public protected(set) Closure $callable,
-        public protected(set) ?string $name = null,
-        public protected(set) ?string $message = null,
-        public protected(set) Closure|string|null $on = null,
-        public protected(set) bool $last = false,
-        public protected(set) array $pass = [],
+        public readonly Closure $callable,
+        public readonly ?string $name = null,
+        public readonly ?string $message = null,
+        public readonly Closure|string|null $on = null,
+        public readonly bool $last = false,
+        public readonly array $pass = [],
     ) {
     }
 
