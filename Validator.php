@@ -502,7 +502,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param string $name The name of the rule.
      * @param array $rule The rule array to normalize.
-     * @return array{callable: \Closure, last: bool, pass: array, message?: string}
+     * @return array{callable: \Closure, name?: string, message?: string, on: \Closure|string|null, last: bool, pass: array}
      */
     protected function normalizeRuleArray(string $name, array $rule): array
     {
@@ -513,18 +513,27 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             'pass' => [],
         ];
 
+        $provider = $this->_providers[$rule['provider']];
         $method = $rule['rule'];
         if (is_string($method)) {
-            $rule['callable'] = [$this->_providers[$rule['provider']], $method](...);
+            $callable = [$provider, $method];
         } elseif (is_array($method) && !is_callable($method)) {
             $rule['pass'] = array_slice($method, 1);
-            $rule['callable'] = [$this->_providers[$rule['provider']], array_shift($method)](...);
+            $method = array_shift($method);
+            $callable = [$provider, $method];
         } else {
-            $rule['callable'] = $method(...);
+            $callable = $method;
         }
+
+        assert(
+            is_callable($callable, false, $callableName),
+            "Expected a callable method. Got `{$callableName}`",
+        );
+        $rule['callable'] = $callable(...);
 
         unset($rule['provider'], $rule['rule']);
 
+        /** @phpstan-ignore-next-line return.type */
         return $rule;
     }
 
