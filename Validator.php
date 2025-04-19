@@ -230,8 +230,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             $name = (string)$name;
             $keyPresent = array_key_exists($name, $data);
 
-            $providers = $this->_providers;
-            $context = compact('data', 'newRecord', 'field', 'providers');
+            $context = compact('data', 'newRecord', 'field');
 
             if (!$keyPresent && !$this->_checkPresence($field, $context)) {
                 $errors[$name]['_required'] = $this->getRequiredMessage($name);
@@ -405,6 +404,10 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         if (!$value instanceof ValidationSet) {
             $set = new ValidationSet();
             foreach ($value as $name => $rule) {
+                if (is_array($rule)) {
+                    $rule = $this->normalizeRuleArray($name, $rule);
+                }
+
                 $set->add($name, $rule);
             }
             $value = $set;
@@ -478,22 +481,60 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         foreach ($rules as $name => $rule) {
-            if (is_array($rule)) {
-                $rule += [
-                    'rule' => $name,
-                    'last' => $this->_stopOnFailure,
-                ];
-            }
-            if (!is_string($name)) {
+            if (is_numeric($name)) {
                 throw new InvalidArgumentException(
-                    'You cannot add validation rules without a `name` key. Update rules array to have string keys.',
+                    'You cannot add validation rules without a name. Update your rules array to have string keys.',
                 );
+            }
+
+            if (is_array($rule)) {
+                $rule = $this->normalizeRuleArray($name, $rule);
             }
 
             $validationSet->add($name, $rule);
         }
 
         return $this;
+    }
+
+    /**
+     * Normalizes the rule array to ensure it has the correct keys and values.
+     *
+     * @param string $name The name of the rule.
+     * @param array $rule The rule array to normalize.
+     * @return array{callable: \Closure, name?: string, message?: string, on: \Closure|string|null, last: bool, pass: array}
+     */
+    protected function normalizeRuleArray(string $name, array $rule): array
+    {
+        $rule += [
+            'rule' => $name,
+            'last' => $this->_stopOnFailure,
+            'provider' => 'default',
+            'pass' => [],
+        ];
+
+        $provider = $this->_providers[$rule['provider']];
+        $method = $rule['rule'];
+        if (is_string($method)) {
+            $callable = [$provider, $method];
+        } elseif (is_array($method) && !is_callable($method)) {
+            $rule['pass'] = array_slice($method, 1);
+            $method = array_shift($method);
+            $callable = [$provider, $method];
+        } else {
+            $callable = $method;
+        }
+
+        assert(
+            is_callable($callable, false, $callableName),
+            "Expected a callable method. Got `{$callableName}`",
+        );
+        $rule['callable'] = $callable(...);
+
+        unset($rule['provider'], $rule['rule']);
+
+        /** @phpstan-ignore-next-line return.type */
+        return $rule;
     }
 
     /**
@@ -525,21 +566,19 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         $extra = array_filter(['message' => $message, 'on' => $when]);
 
         $validationSet = $this->field($field);
-        $validationSet->add(static::NESTED, $extra + ['rule' => function ($value, $context) use ($validator, $message) {
-            if (!is_array($value)) {
-                return false;
-            }
-            foreach ($this->providers() as $name) {
-                /** @var object|class-string $provider */
-                $provider = $this->getProvider($name);
-                $validator->setProvider($name, $provider);
-            }
-            $errors = $validator->validate($value, $context['newRecord']);
+        $validationSet->add(
+            static::NESTED,
+            $extra + ['callable' => function ($value, $context) use ($validator, $message) {
+                if (!is_array($value)) {
+                    return false;
+                }
 
-            $message = $message ? [static::NESTED => $message] : [];
+                $errors = $validator->validate($value, $context['newRecord']);
+                $message = $message ? [static::NESTED => $message] : [];
 
-            return $errors === [] ? true : $errors + $message;
-        }]);
+                return $errors === [] ? true : $errors + $message;
+            }],
+        );
 
         return $this;
     }
@@ -573,30 +612,29 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         $extra = array_filter(['message' => $message, 'on' => $when]);
 
         $validationSet = $this->field($field);
-        $validationSet->add(static::NESTED, $extra + ['rule' => function ($value, $context) use ($validator, $message) {
-            if (!is_array($value)) {
-                return false;
-            }
-            foreach ($this->providers() as $name) {
-                /** @var object|class-string $provider */
-                $provider = $this->getProvider($name);
-                $validator->setProvider($name, $provider);
-            }
-            $errors = [];
-            foreach ($value as $i => $row) {
-                if (!is_array($row)) {
+        $validationSet->add(
+            static::NESTED,
+            $extra + ['callable' => function ($value, $context) use ($validator, $message) {
+                if (!is_array($value)) {
                     return false;
                 }
-                $check = $validator->validate($row, $context['newRecord']);
-                if ($check) {
-                    $errors[$i] = $check;
+
+                $errors = [];
+                foreach ($value as $i => $row) {
+                    if (!is_array($row)) {
+                        return false;
+                    }
+                    $check = $validator->validate($row, $context['newRecord']);
+                    if ($check) {
+                        $errors[$i] = $check;
+                    }
                 }
-            }
 
-            $message = $message ? [static::NESTED => $message] : [];
+                $message = $message ? [static::NESTED => $message] : [];
 
-            return $errors === [] ? true : $errors + $message;
-        }]);
+                return $errors === [] ? true : $errors + $message;
+            }],
+        );
 
         return $this;
     }
@@ -3119,8 +3157,8 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         foreach ($this->_fields[$field] as $rule) {
-            if ($rule->get('rule') === 'notBlank' && $rule->get('message')) {
-                return $rule->get('message');
+            if ($rule->name === 'notBlank' && $rule->message) {
+                return $rule->message;
             }
         }
 
@@ -3258,7 +3296,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         foreach ($rules as $name => $rule) {
-            $result = $rule->process($data[$field], $this->_providers, compact('newRecord', 'data', 'field'));
+            $result = $rule->process($data[$field], compact('newRecord', 'data', 'field'));
             if ($result === true) {
                 continue;
             }
@@ -3271,7 +3309,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
                 $errors[$name] = $result;
             }
 
-            if ($rule->isLast()) {
+            if ($rule->last) {
                 break;
             }
         }
