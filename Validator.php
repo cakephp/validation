@@ -235,8 +235,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
             $name = (string)$name;
             $keyPresent = array_key_exists($name, $data);
 
-            $providers = $this->_providers;
-            $context = compact('data', 'newRecord', 'field', 'providers') + $context;
+            $context = compact('data', 'newRecord', 'field') + $context;
 
             if (!$keyPresent && !$this->checkPresence($field, $context)) {
                 $errors[$name]['_required'] = $this->getRequiredMessage($name);
@@ -3309,7 +3308,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
         }
 
         foreach ($rules as $name => $rule) {
-            $result = $rule->process($data[$field], $this->_providers, $context);
+            $result = $rule->process($data[$field], $context);
             if ($result === true) {
                 continue;
             }
