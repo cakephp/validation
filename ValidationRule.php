@@ -48,6 +48,8 @@ class ValidationRule
      * it is assumed that the rule failed and the error message was given as a result.
      *
      * @param mixed $value The data to validate
+     * @param array<string, mixed> $providers Associative array with objects or class names that will
+     * be passed as the last argument for the validation method
      * @param array<string, mixed> $context A key value list of data that could be used as context
      * during validation. Recognized keys are:
      * - newRecord: (boolean) whether the data to be validated belongs to a
@@ -58,9 +60,9 @@ class ValidationRule
      * @throws \InvalidArgumentException when the supplied rule is not a valid
      * callable for the configured scope
      */
-    public function process(mixed $value, array $context = []): array|string|bool
+    public function process(mixed $value, array $providers, array $context = []): array|string|bool
     {
-        $context += ['data' => [], 'newRecord' => true];
+        $context += ['data' => [], 'newRecord' => true, 'providers' => $providers];
 
         if ($this->skip($context)) {
             return true;
