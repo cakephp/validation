@@ -569,6 +569,9 @@ class Validation
             $check = static::getDateString($check);
             $dateFormat = 'ymd';
         }
+        if (!is_string($check)) {
+            return false;
+        }
         $parts = preg_split('/[\sT]+/', $check);
         if ($parts && count($parts) > 1) {
             $date = rtrim(array_shift($parts), ',');
@@ -1385,7 +1388,7 @@ class Validation
      */
     public static function uuid(mixed $check): bool
     {
-        $regex = '/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[0-5][a-fA-F0-9]{3}-[089aAbB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$/';
+        $regex = '/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[0-8][a-fA-F0-9]{3}-[089aAbB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$/';
 
         return self::check($check, $regex);
     }
