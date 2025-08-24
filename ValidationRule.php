@@ -48,6 +48,7 @@ class ValidationRule
      * it is assumed that the rule failed and the error message was given as a result.
      *
      * @param mixed $value The data to validate
+     * be passed as the last argument for the validation method
      * @param array<string, mixed> $context A key value list of data that could be used as context
      * during validation. Recognized keys are:
      * - newRecord: (boolean) whether the data to be validated belongs to a
