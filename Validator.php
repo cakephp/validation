@@ -578,7 +578,12 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
                     return false;
                 }
 
-                $errors = $validator->validate($value, $context['newRecord']);
+                foreach ($this->providers() as $name) {
+                    /** @var object|class-string $provider */
+                    $provider = $this->getProvider($name);
+                    $validator->setProvider($name, $provider);
+                }
+                $errors = $validator->validate($value, $context['newRecord'], ['parentContext' => $context]);
                 $message = $message ? [static::NESTED => $message] : [];
 
                 return $errors === [] ? true : $errors + $message;
@@ -629,7 +634,11 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
                     if (!is_array($row)) {
                         return false;
                     }
-                    $check = $validator->validate($row, $context['newRecord']);
+                    $check = $validator->validate(
+                        $row,
+                        $context['newRecord'],
+                        ['parentContext' => $context, 'nestedManyIndex' => $i],
+                    );
                     if ($check) {
                         $errors[$i] = $check;
                     }
