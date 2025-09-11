@@ -507,13 +507,8 @@ class Validation
         $regex['y'] = '%^(' . $fourDigitYear . ')$%';
 
         $format = (array)$format;
-        foreach ($format as $key) {
-            if (static::check($check, $regex[$key])) {
-                return true;
-            }
-        }
 
-        return false;
+        return array_any($format, fn($key) => static::check($check, $regex[$key]));
     }
 
     /**
@@ -1066,13 +1061,8 @@ class Validation
         }
 
         $extension = strtolower(pathinfo($check, PATHINFO_EXTENSION));
-        foreach ($extensions as $value) {
-            if ($extension === strtolower($value)) {
-                return true;
-            }
-        }
 
-        return false;
+        return array_any($extensions, fn($value) => $extension === strtolower($value));
     }
 
     /**
