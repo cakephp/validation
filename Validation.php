@@ -932,7 +932,7 @@ class Validation
             $check = (int)$check;
         }
 
-        if (get_debug_type($check) !== (string)$backingType) {
+        if (get_debug_type($check) !== $backingType) {
             return false;
         }
 
