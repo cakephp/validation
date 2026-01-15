@@ -174,7 +174,7 @@ class Validation
     }
 
     /**
-     * Checks that a doesn't contain any alpha numeric characters
+     * Checks that a value doesn't contain any alpha numeric characters
      *
      * This method's definition of letters and integers includes unicode characters.
      * Use `notAsciiAlphaNumeric()` if you want to exclude ascii only.
@@ -203,7 +203,7 @@ class Validation
     }
 
     /**
-     * Checks that a doesn't contain any non-ascii alpha numeric characters
+     * Checks that a value doesn't contain any non-ascii alpha numeric characters
      *
      * @param mixed $check Value to check
      * @return bool Success
@@ -1729,7 +1729,7 @@ class Validation
     /**
      * Convenience method for longitude validation.
      *
-     * @param mixed $value Latitude as string
+     * @param mixed $value Longitude as string
      * @param array<string, mixed> $options Options for the validation logic.
      * @return bool
      * @link https://en.wikipedia.org/wiki/Longitude
